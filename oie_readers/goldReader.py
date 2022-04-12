@@ -13,7 +13,7 @@ class GoldReader(OieReader):
     
     def read(self, fn):
         d = defaultdict(lambda: [])
-        with open(fn) as fin:
+        with open(fn, encoding="utf-8") as fin:
             for line_ind, line in enumerate(fin):
 #                print line
                 data = line.strip().split('\t')

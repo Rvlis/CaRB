@@ -159,8 +159,9 @@ class Benchmark:
             # for indices beyond the maximum sentence confidence, len(scores) has to be added to the denominator of recall
             rl[prev_c:] += len(scores)
 
+        # precision and recall 22.4.12
         prec_scores = [a/b if b>0 else 1 for a,b in zip(p,pl) ]
-        rec_scores = [a/b if b>0 else 0 for a,b in zip(r,rl)]
+        rec_scores = [a*2.0/b if b>0 else 0 for a,b in zip(r,rl)]
 
         f1s = [Benchmark.f1(p,r) for p,r in zip(prec_scores, rec_scores)]
         try:
