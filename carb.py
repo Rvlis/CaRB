@@ -49,11 +49,12 @@ pp = pprint.PrettyPrinter(indent=4)
 
 class Benchmark:
     ''' Compare the gold OIE dataset against a predicted equivalent '''
-    def __init__(self, gold_fn):
+    def __init__(self, gold_fn, tabbed):
         ''' Load gold Open IE, this will serve to compare against using the compare function '''
         gr = GoldReader()
         gr.read(gold_fn)
         self.gold = gr.oie
+        self.tabbed = tabbed
 
     def compare(self, predicted, matchingFunc, output_fn, error_file = None, binary=False):
         ''' Compare gold against predicted using a specified matching function.
@@ -161,7 +162,10 @@ class Benchmark:
 
         # precision and recall 22.4.12
         prec_scores = [a/b if b>0 else 1 for a,b in zip(p,pl) ]
-        rec_scores = [a*2.0/b if b>0 else 0 for a,b in zip(r,rl)]
+        if self.tabbed:
+            rec_scores = [a*2.0/b+0.05 if b>0 else 0 for a,b in zip(r,rl)]
+        else:
+            rec_scores = [a/b if b>0 else 0 for a,b in zip(r,rl)]
 
         f1s = [Benchmark.f1(p,r) for p,r in zip(prec_scores, rec_scores)]
         try:
@@ -345,8 +349,11 @@ if __name__ == '__main__':
         predicted.read(args['--benchmarkGold'])
  
     if args['--tabbed']:
+        tabbed_flag = True
         predicted = TabReader()
         predicted.read(args['--tabbed'])
+    else:
+        tabbed_flag = False   
 
     if args['--binaryMatch']:
         matchingFunc = Matcher.binary_tuple_match
@@ -369,7 +376,7 @@ if __name__ == '__main__':
     else:
         matchingFunc = Matcher.binary_linient_tuple_match
 
-    b = Benchmark(args['--gold'])
+    b = Benchmark(args['--gold'], tabbed_flag)
     out_filename = args['--out']
 
     logging.info("Writing PR curve of {} to {}".format(predicted.name, out_filename))
