@@ -160,7 +160,7 @@ class Benchmark:
             # for indices beyond the maximum sentence confidence, len(scores) has to be added to the denominator of recall
             rl[prev_c:] += len(scores)
 
-        # precision and recall 22.4.12
+        # precision and recall
         prec_scores = [a/b if b>0 else 1 for a,b in zip(p,pl) ]
         if self.tabbed:
             rec_scores = [a*2.0/b+0.05 if b>0 else 0 for a,b in zip(r,rl)]
